@@ -120,7 +120,9 @@ class SignalCollector:
                 tenant_id=self.config["teams"]["tenant_id"],
                 client_id=self.config["teams"]["client_id"],
                 client_secret=self.config["teams"]["client_secret"],
-                poll_interval=self.config["teams"]["poll_interval"]
+                poll_interval=self.config["teams"]["poll_interval"],
+                channels=self.config["teams"].get("channels", []),
+                group_chats=self.config["teams"].get("group_chats", [])
             )
             self.manager.add_listener(teams_listener)
             logger.info("Added Microsoft Teams listener")

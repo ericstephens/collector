@@ -4,7 +4,29 @@
     "tenant_id": "your_tenant_id",
     "client_id": "your_client_id",
     "client_secret": "your_client_secret",
-    "poll_interval": 30.0
+    "poll_interval": 30.0,
+    "channels": [
+      {
+        "team_id": "team_id_1",
+        "channel_id": "channel_id_1",
+        "name": "General"
+      },
+      {
+        "team_id": "team_id_2",
+        "channel_id": "channel_id_2",
+        "name": "Project Updates"
+      }
+    ],
+    "group_chats": [
+      {
+        "chat_id": "chat_id_1",
+        "name": "Dev Team"
+      },
+      {
+        "chat_id": "chat_id_2",
+        "name": "Support Team"
+      }
+    ]
   },
   "kafka": {
     "enabled": false,
