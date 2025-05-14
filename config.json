@@ -34,11 +34,13 @@
     "topics": ["signals", "events", "alerts"],
     "group_id": "signal_collector"
   },
-  "datadog": {
+  "otel": {
     "enabled": false,
+    "backend": "datadog",
     "api_key": "your_api_key",
     "app_key": "your_app_key",
     "site": "datadoghq.com",
+    "endpoint": "",
     "poll_interval": 60.0,
     "metrics": ["system.cpu.user", "system.mem.used"],
     "monitors": [12345, 67890]

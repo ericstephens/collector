@@ -15,7 +15,7 @@ from typing import Dict, Any, List
 from .listener.signal_listener import SignalListenerManager
 from .listener.teams_listener import TeamsListener
 from .listener.kafka_listener import KafkaListener
-from .listener.datadog_listener import DataDogListener
+from .listener.otel_listener import OTelListener
 from .listener.controlm_listener import ControlMListener
 
 # Configure logging
@@ -69,11 +69,13 @@ class SignalCollector:
                 "topics": ["signals"],
                 "group_id": "signal_collector"
             },
-            "datadog": {
+            "otel": {
                 "enabled": False,
+                "backend": "datadog",
                 "api_key": "",
                 "app_key": "",
                 "site": "datadoghq.com",
+                "endpoint": "",
                 "poll_interval": 60.0,
                 "metrics": [],
                 "monitors": []
@@ -138,19 +140,21 @@ class SignalCollector:
             self.manager.add_listener(kafka_listener)
             logger.info("Added Kafka listener")
         
-        # DataDog listener
-        if self.config["datadog"]["enabled"]:
-            datadog_listener = DataDogListener(
-                name="datadog_listener",
-                api_key=self.config["datadog"]["api_key"],
-                app_key=self.config["datadog"]["app_key"],
-                site=self.config["datadog"]["site"],
-                poll_interval=self.config["datadog"]["poll_interval"],
-                metrics=self.config["datadog"]["metrics"],
-                monitors=self.config["datadog"]["monitors"]
+        # OpenTelemetry listener
+        if self.config["otel"]["enabled"]:
+            otel_listener = OTelListener(
+                name="otel_listener",
+                api_key=self.config["otel"]["api_key"],
+                app_key=self.config["otel"]["app_key"],
+                site=self.config["otel"]["site"],
+                endpoint=self.config["otel"].get("endpoint"),
+                poll_interval=self.config["otel"]["poll_interval"],
+                metrics=self.config["otel"]["metrics"],
+                monitors=self.config["otel"]["monitors"],
+                backend=self.config["otel"].get("backend", "datadog")
             )
-            self.manager.add_listener(datadog_listener)
-            logger.info("Added DataDog listener")
+            self.manager.add_listener(otel_listener)
+            logger.info(f"Added OpenTelemetry listener configured for {self.config['otel'].get('backend', 'datadog')}")
         
         # Control-M listener
         if self.config["controlm"]["enabled"]:
