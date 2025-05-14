@@ -35,7 +35,7 @@
     "group_id": "signal_collector"
   },
   "otel": {
-    "enabled": false,
+    "enabled": true,
     "backend": "datadog",
     "api_key": "your_api_key",
     "app_key": "your_app_key",
@@ -46,7 +46,7 @@
     "monitors": [12345, 67890]
   },
   "controlm": {
-    "enabled": true,
+    "enabled": false,
     "endpoint": "http://localhost:8080/api",
     "username": "your_username",
     "password": "your_password",
