@@ -1,0 +1,127 @@
+#!/bin/bash
+# Collector management script
+# This script manages the execution of the signal collector
+
+# Set the project root directory
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_FILE="$PROJECT_ROOT/config.json"
+PID_FILE="$PROJECT_ROOT/.collector.pid"
+
+# Activate conda environment
+activate_env() {
+    echo "Checking collector conda environment..."
+    # Source conda to make conda activate available in this script
+    source "$(conda info --base)/etc/profile.d/conda.sh"
+    
+    # Check if the environment exists
+    if ! conda env list | grep -q "^collector "; then
+        echo "Collector environment not found. Creating it from environment.yaml..."
+        conda env create -f "$PROJECT_ROOT/environment.yaml" || {
+            echo "Failed to create collector environment from environment.yaml"
+            exit 1
+        }
+        echo "Environment created successfully."
+    fi
+    
+    echo "Activating collector conda environment..."
+    conda activate collector || {
+        echo "Failed to activate collector environment."
+        exit 1
+    }
+}
+
+# Start the collector
+start() {
+    if [ -f "$PID_FILE" ]; then
+        PID=$(cat "$PID_FILE")
+        if ps -p "$PID" > /dev/null; then
+            echo "Collector is already running with PID $PID"
+            return 0
+        else
+            echo "Stale PID file found, removing..."
+            rm "$PID_FILE"
+        fi
+    fi
+
+    echo "Starting collector..."
+    activate_env
+    
+    # Run the collector in the background
+    python -m src.signal_collector --config "$CONFIG_FILE" &
+    
+    # Save the PID
+    PID=$!
+    echo $PID > "$PID_FILE"
+    echo "Collector started with PID $PID"
+}
+
+# Stop the collector
+stop() {
+    if [ -f "$PID_FILE" ]; then
+        PID=$(cat "$PID_FILE")
+        if ps -p "$PID" > /dev/null; then
+            echo "Stopping collector with PID $PID..."
+            kill "$PID"
+            rm "$PID_FILE"
+            echo "Collector stopped"
+        else
+            echo "No running collector found with PID $PID"
+            rm "$PID_FILE"
+        fi
+    else
+        echo "No collector PID file found"
+    fi
+}
+
+# Restart the collector
+restart() {
+    stop
+    sleep 2
+    start
+}
+
+# Status of the collector
+status() {
+    if [ -f "$PID_FILE" ]; then
+        PID=$(cat "$PID_FILE")
+        if ps -p "$PID" > /dev/null; then
+            echo "Collector is running with PID $PID"
+        else
+            echo "Collector is not running (stale PID file found)"
+            rm "$PID_FILE"
+        fi
+    else
+        echo "Collector is not running"
+    fi
+}
+
+# Function to display usage information
+usage() {
+    echo "Usage: $0 {start|stop|restart|status}"
+    echo "  start   - Start the collector"
+    echo "  stop    - Stop the collector"
+    echo "  restart - Restart the collector"
+    echo "  status  - Check the status of the collector"
+}
+
+# Main script logic
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        restart
+        ;;
+    status)
+        status
+        ;;
+    *)
+        usage
+        exit 1
+        ;;
+esac
+
+exit 0

@@ -1,0 +1,31 @@
+{
+  "teams": {
+    "enabled": false,
+    "tenant_id": "your_tenant_id",
+    "client_id": "your_client_id",
+    "client_secret": "your_client_secret",
+    "poll_interval": 30.0
+  },
+  "kafka": {
+    "enabled": false,
+    "bootstrap_servers": "localhost:9092",
+    "topics": ["signals", "events", "alerts"],
+    "group_id": "signal_collector"
+  },
+  "datadog": {
+    "enabled": false,
+    "api_key": "your_api_key",
+    "app_key": "your_app_key",
+    "site": "datadoghq.com",
+    "poll_interval": 60.0,
+    "metrics": ["system.cpu.user", "system.mem.used"],
+    "monitors": [12345, 67890]
+  },
+  "controlm": {
+    "enabled": true,
+    "endpoint": "http://localhost:8080/api",
+    "username": "your_username",
+    "password": "your_password",
+    "poll_interval": 60.0
+  }
+}

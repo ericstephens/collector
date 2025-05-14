@@ -1,0 +1,18 @@
+name: collector
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.13
+  - pip>=21.0
+  - requests>=2.28.0
+  - pip:
+    - confluent-kafka>=2.0.0
+    - opentelemetry-api>=1.15.0
+    - opentelemetry-sdk>=1.15.0
+    - opentelemetry-exporter-otlp>=1.15.0
+    - opentelemetry-exporter-otlp-proto-http>=1.15.0
+    - opentelemetry-instrumentation>=0.36b0
+    - pytest>=7.0.0  # For API unit tests as per project rules
+variables:
+  PYTHONPATH: ${CONDA_PREFIX}/lib/python3.13/site-packages
